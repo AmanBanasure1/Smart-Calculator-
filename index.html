@@ -10,32 +10,45 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between items-center p-3 sm:p-4">
 
-    <!-- Header & Mode Selector -->
-    <header class="w-full max-w-md text-center py-2">
+    <!-- Header & Settings -->
+    <header class="w-full max-w-md text-center py-2 relative">
+        <button onclick="toggleSettings()" class="absolute right-0 top-2 text-slate-400 hover:text-white text-xs bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-lg">⚙️ API Key</button>
         <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">AI Smart Calculator Pro</h1>
-        <p class="text-xs text-slate-400 mb-2">Natural Language, Voice & Intelligent Solver</p>
+        <p class="text-xs text-slate-400 mb-2">Powered by Google Gemini AI</p>
         
         <!-- Mode Selector Tabs -->
-        <div class="flex justify-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs">
-            <button onclick="setMode('standard')" id="mode-standard" class="flex-1 py-1.5 px-2 rounded-lg bg-blue-600 font-medium transition">Calculator</button>
-            <button onclick="setMode('ai')" id="mode-ai" class="flex-1 py-1.5 px-2 rounded-lg hover:bg-slate-700 text-slate-300 font-medium transition">AI Solver</button>
-            <button onclick="setMode('history')" id="mode-history" class="flex-1 py-1.5 px-2 rounded-lg hover:bg-slate-700 text-slate-300 font-medium transition">History & Insights</button>
+        <div class="flex justify-center gap-1 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs mt-2">
+            <button onclick="setMode('standard')" id="mode-standard" class="flex-1 py-1 px-2 rounded-md bg-blue-600 font-medium transition">Calculator</button>
+            <button onclick="setMode('ai')" id="mode-ai" class="flex-1 py-1 px-2 rounded-md hover:bg-slate-700 text-slate-300 font-medium transition">AI Solver</button>
+            <button onclick="setMode('history')" id="mode-history" class="flex-1 py-1 px-2 rounded-md hover:bg-slate-700 text-slate-300 font-medium transition">History</button>
         </div>
     </header>
+
+    <!-- API Key Settings Modal / Box (Hidden by default) -->
+    <div id="api-settings-box" class="w-full max-w-md bg-slate-800 border border-blue-500/50 p-3 rounded-xl mb-3 hidden text-xs space-y-2">
+        <div class="flex justify-between items-center">
+            <span class="font-semibold text-blue-400">Enter Gemini API Key</span>
+            <button onclick="toggleSettings()" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        <p class="text-slate-400 text-[11px]">Get your free key from Google AI Studio. It is saved locally on your device.</p>
+        <div class="flex gap-2">
+            <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+            <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded font-semibold">Save</button>
+        </div>
+    </div>
 
     <!-- Main Container -->
     <main class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl p-4 sm:p-5 border border-slate-700 relative overflow-hidden">
         
-        <!-- VIEW 1: Standard & AI Input Calculator -->
+        <!-- VIEW 1: Calculator & AI Prompt -->
         <div id="view-calculator" class="space-y-3">
-            <!-- Natural Language AI Bar -->
             <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700">
                 <label class="block text-[11px] text-blue-400 font-semibold mb-1 flex items-center justify-between">
-                    <span>✨ Ask AI / Word Problem</span>
+                    <span>✨ Ask Gemini AI Anything</span>
                     <span id="mic-status" class="text-slate-500 cursor-pointer hover:text-white" onclick="toggleVoice()">🎙️ Voice</span>
                 </label>
                 <div class="flex gap-2">
-                    <input type="text" id="ai-input" placeholder="e.g., 450 + 18% GST or split 1200 by 4" 
+                    <input type="text" id="ai-input" placeholder="e.g., A shopkeeper buys 20kg rice at 40 and sells at 50..." 
                         class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
                     <button onclick="handleAIQuery()" class="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Ask</button>
                 </div>
@@ -76,25 +89,21 @@
             </div>
         </div>
 
-        <!-- VIEW 2: History & AI Insights Panel -->
+        <!-- VIEW 2: History Panel -->
         <div id="view-history" class="hidden space-y-3">
             <div class="flex justify-between items-center">
-                <h2 class="text-sm font-semibold text-slate-300">Calculation Log & AI Insights</h2>
+                <h2 class="text-sm font-semibold text-slate-300">Calculation Log</h2>
                 <button onclick="clearHistoryLog()" class="text-[11px] text-red-400 hover:underline">Clear History</button>
             </div>
             <div id="history-log-container" class="bg-slate-950 rounded-xl p-3 h-64 overflow-y-auto space-y-2 text-xs border border-slate-800">
                 <p class="text-slate-500 text-center py-10">No calculations recorded yet.</p>
             </div>
-            <div id="ai-insights-box" class="bg-indigo-950/40 border border-indigo-800/50 p-2.5 rounded-xl text-xs text-indigo-200">
-                💡 <span class="font-semibold">AI Tip:</span> Use the AI prompt bar above to calculate percentages, split bills, or translate units instantly!
-            </div>
         </div>
 
     </main>
 
-    <!-- Footer -->
     <footer class="text-xs text-slate-500 py-2 text-center">
-        AI Calculator Pro • Built with Mobile-First Architecture
+        AI Calculator Pro • Powered by Gemini API
     </footer>
 
     <script src="script.js"></script>
