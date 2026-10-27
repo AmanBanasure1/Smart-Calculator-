@@ -49,7 +49,6 @@ function updateScreen() {
 function calculateResult() {
     try {
         let sanitized = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-        // Smart Error Correction: Check trailing operators
         if (/[\+\-\*\/\.]$/.test(sanitized)) {
             sanitized = sanitized.slice(0, -1);
         }
@@ -71,7 +70,7 @@ function calculateResult() {
     }
 }
 
-// AI Natural Language & Word Problem Parser
+// AI Natural Language & Advanced Smart Utility Parser
 function handleAIQuery() {
     const query = document.getElementById('ai-input').value.trim();
     if (!query) return;
@@ -84,69 +83,215 @@ function handleAIQuery() {
         if (result) {
             historyScreen.textContent = query;
             mainScreen.textContent = result.answer;
-            aiExplanation.textContent = `✨ AI Solver: ${result.explanation}`;
+            aiExplanation.textContent = `✨ Smart Solver: ${result.explanation}`;
             aiExplanation.classList.remove('hidden');
             addToHistory(`${query} ➔ ${result.answer}`, result.explanation);
-            currentInput = String(result.rawAnswer || result.answer);
+            currentInput = String(result.rawAnswer !== undefined ? result.rawAnswer : result.answer);
         } else {
             mainScreen.textContent = 'Error';
-            aiExplanation.textContent = '💡 Try queries like: "450 + 18% GST" or "split 1200 among 4".';
+            aiExplanation.textContent = '💡 Try: "GST", "compound interest on 20000 at 6% for 3 years", "bmi for 70 kg 175 cm", etc.';
             aiExplanation.classList.remove('hidden');
         }
-    }, 600);
+    }, 400);
 }
 
-// Client-side Rule-based AI Engine for Smart Queries
+// Comprehensive Client-side Smart Rule Engine
 function processNaturalLanguage(text) {
     let lower = text.toLowerCase();
+    let numbers = text.match(/[\d\.]+/g);
+    let nums = numbers ? numbers.map(Number) : [];
 
-    // 1. Percentage / GST calculation (e.g., "450 + 18% GST" or "1000 ka 15% kitna")
-    if (lower.includes('gst') || lower.includes('%')) {
-        let numbers = text.match(/[\d\.]+/g);
-        if (numbers && numbers.length >= 2) {
-            let base = parseFloat(numbers[0]);
-            let pct = parseFloat(numbers[1]);
+    // 1. GST / Tax Calculation (e.g., "450 + 18% gst")
+    if ((lower.includes('gst') || lower.includes('%')) && !lower.includes('discount') && !lower.includes('off') && !lower.includes('tip') && !lower.includes('interest')) {
+        if (nums.length >= 2) {
+            let base = nums[0];
+            let pct = nums[1];
             let val = base + (base * pct) / 100;
             return {
                 answer: val.toFixed(2),
                 rawAnswer: val,
-                explanation: `Added ${pct}% tax/percentage to ${base}.`
+                explanation: `Added ${pct}% tax/GST to base price ₹${base}.`
             };
         }
     }
 
-    // 2. Bill Split calculation (e.g., "split 1200 among 4" or "1500 ko 3 logo mein bato")
+    // 2. Discount & Sale Price (e.g., "1200 with 30% discount")
+    if (lower.includes('discount') || lower.includes('off')) {
+        if (nums.length >= 2) {
+            let price = nums[0];
+            let discPct = nums[1];
+            let discountAmount = (price * discPct) / 100;
+            let finalPrice = price - discountAmount;
+            return {
+                answer: `₹${finalPrice.toFixed(2)}`,
+                rawAnswer: finalPrice,
+                explanation: `Original: ₹${price}, Discount: ₹${discountAmount.toFixed(2)} (${discPct}% off).`
+            };
+        }
+    }
+
+    // 3. Profit & Loss Solver (e.g., "buys 20 kg at 40 and sells at 50")
+    if (lower.includes('buys') && lower.includes('sells')) {
+        if (nums.length >= 3) {
+            let quantity = nums[0];
+            let cpPerKg = nums[1];
+            let spPerKg = nums[2];
+            let totalCp = quantity * cpPerKg;
+            let totalSp = quantity * spPerKg;
+            let profitOrLoss = totalSp - totalCp;
+            let pct = (Math.abs(profitOrLoss) / totalCp) * 100;
+            let status = profitOrLoss >= 0 ? "Profit" : "Loss";
+            return {
+                answer: `₹${Math.abs(profitOrLoss)} (${status} ${pct.toFixed(1)}%)`,
+                rawAnswer: profitOrLoss,
+                explanation: `Total CP: ₹${totalCp}, Total SP: ₹${totalSp}. ${status} of ₹${Math.abs(profitOrLoss)} (${pct.toFixed(1)}%).`
+            };
+        }
+    }
+
+    // 4. Bill / Expense Split (e.g., "split 1200 among 4")
     if (lower.includes('split') || lower.includes('bato') || lower.includes('among')) {
-        let numbers = text.match(/[\d\.]+/g);
-        if (numbers && numbers.length >= 2) {
-            let total = parseFloat(numbers[0]);
-            let persons = parseFloat(numbers[1]);
+        if (nums.length >= 2) {
+            let total = nums[0];
+            let persons = nums[1];
             if (persons > 0) {
                 let perPerson = total / persons;
                 return {
-                    answer: perPerson.toFixed(2),
+                    answer: `₹${perPerson.toFixed(2)} /person`,
                     rawAnswer: perPerson,
-                    explanation: `Total ${total} split equally among ${persons} people.`
+                    explanation: `Total ₹${total} split equally among ${persons} people.`
                 };
             }
         }
     }
 
-    // 3. Simple Unit Converter (e.g., "5 meter to feet" -> 1 meter = 3.28084 feet)
+    // 5. Simple Interest (e.g., "interest on 10000 at 5% for 2 years")
+    if ((lower.includes('interest') || lower.includes('si') || lower.includes('byaj')) && !lower.includes('compound') && !lower.includes('ci')) {
+        if (nums.length >= 3) {
+            let principal = nums[0];
+            let rate = nums[1];
+            let time = nums[2];
+            let interest = (principal * rate * time) / 100;
+            let totalAmount = principal + interest;
+            return {
+                answer: `₹${interest.toFixed(2)} (Total: ₹${totalAmount.toFixed(2)})`,
+                rawAnswer: interest,
+                explanation: `Simple Interest for ${time} yrs @ ${rate}% is ₹${interest.totalAmount} payable.`
+            };
+        }
+    }
+
+    // 6. Compound Interest (e.g., "compound interest on 20000 at 6% for 3 years")
+    if (lower.includes('compound') || lower.includes('ci')) {
+        if (nums.length >= 3) {
+            let p = nums[0];
+            let r = nums[1];
+            let t = nums[2];
+            let amount = p * Math.pow((1 + r / 100), t);
+            let ci = amount - p;
+            return {
+                answer: `₹${ci.toFixed(2)} (Total: ₹${amount.toFixed(2)})`,
+                rawAnswer: ci,
+                explanation: `Compound Interest on ₹${p} @ ${r}% for ${t} yrs is ₹${ci.toFixed(2)}. Total Amount: ₹${amount.toFixed(2)}.`
+            };
+        }
+    }
+
+    // 7. Loan EMI Estimation (e.g., "emi for 500000 at 9% for 5 years")
+    if (lower.includes('emi') || lower.includes('loan')) {
+        if (nums.length >= 3) {
+            let principal = nums[0];
+            let annualRate = nums[1];
+            let years = nums[2];
+            let monthlyRate = annualRate / (12 * 100);
+            let months = years * 12;
+            let emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+            let totalPayment = emi * months;
+            return {
+                answer: `₹${emi.toFixed(2)} /month`,
+                rawAnswer: emi,
+                explanation: `Monthly EMI for ₹${principal} @ ${annualRate}% for ${years} yrs. Total Payment: ₹${totalPayment.toFixed(2)}.`
+            };
+        }
+    }
+
+    // 8. Speed, Distance & Time (e.g., "speed for 150 km in 3 hours")
+    if (lower.includes('speed') || (lower.includes('km') && lower.includes('hour'))) {
+        if (nums.length >= 2) {
+            let distance = nums[0];
+            let time = nums[1];
+            if (time > 0) {
+                let speed = distance / time;
+                return {
+                    answer: `${speed.toFixed(2)} km/h`,
+                    rawAnswer: speed,
+                    explanation: `Covering ${distance} km in ${time} hours gives an average speed of ${speed.toFixed(2)} km/h.`
+                };
+            }
+        }
+    }
+
+    // 9. Fuel Cost / Mileage (e.g., "fuel cost for 450 km at 15 km/l with 100 per litre")
+    if (lower.includes('fuel') || lower.includes('petrol') || lower.includes('mileage')) {
+        if (nums.length >= 3) {
+            let distance = nums[0];
+            let mileage = nums[1];
+            let pricePerLitre = nums[2];
+            let litresNeeded = distance / mileage;
+            let totalCost = litresNeeded * pricePerLitre;
+            return {
+                answer: `₹${totalCost.toFixed(2)} (${litresNeeded.toFixed(1)} L)`,
+                rawAnswer: totalCost,
+                explanation: `For ${distance} km with ${mileage} km/l mileage and ₹${pricePerLitre}/L cost, total fuel required is ${litresNeeded.toFixed(1)}L costing ₹${totalCost.toFixed(2)}.`
+            };
+        }
+    }
+
+    // 10. Tip Calculator (e.g., "tip 10% on 1500")
+    if (lower.includes('tip')) {
+        if (nums.length >= 2) {
+            let bill = nums[0];
+            let tipPct = nums[1];
+            let tipAmount = (bill * tipPct) / 100;
+            let totalBill = bill + tipAmount;
+            return {
+                answer: `₹${totalBill.toFixed(2)} (Tip: ₹${tipAmount.toFixed(2)})`,
+                rawAnswer: totalBill,
+                explanation: `Bill: ₹${bill} + Tip (${tipPct}%): ₹${tipAmount.toFixed(2)} = Total ₹${totalBill.toFixed(2)}.`
+            };
+        }
+    }
+
+    // 11. BMI Calculator (e.g., "bmi for 70 kg 175 cm")
+    if (lower.includes('bmi')) {
+        if (nums.length >= 2) {
+            let weight = nums[0];
+            let heightCm = nums[1];
+            let heightM = heightCm > 3 ? heightCm / 100 : heightCm; // Handle meters or cm
+            let bmi = weight / (heightM * heightM);
+            let category = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal weight" : bmi < 30 ? "Overweight" : "Obese";
+            return {
+                answer: `${bmi.toFixed(1)} (${category})`,
+                rawAnswer: bmi,
+                explanation: `Weight: ${weight}kg, Height: ${heightM}m. BMI is ${bmi.toFixed(1)} (${category}).`
+            };
+        }
+    }
+
+    // 12. Unit Converter (e.g., "5 meter to feet")
     if (lower.includes('meter') && (lower.includes('feet') || lower.includes('foot'))) {
-        let numbers = text.match(/[\d\.]+/g);
-        if (numbers && numbers.length >= 1) {
-            let meters = parseFloat(numbers[0]);
+        if (nums.length >= 1) {
+            let meters = nums[0];
             let feet = meters * 3.28084;
             return {
-                answer: feet.toFixed(2) + ' ft',
+                answer: `${feet.toFixed(2)} ft`,
                 rawAnswer: feet,
                 explanation: `${meters} meters converted to feet.`
             };
         }
     }
 
-    // Fallback safe eval if it looks like a math expression
+    // Fallback safe direct math eval
     try {
         let cleanExpr = text.replace(/[a-zA-Z]/g, '').trim();
         if (cleanExpr.length > 0) {
@@ -190,7 +335,7 @@ function clearHistoryLog() {
     renderHistoryLog();
 }
 
-// Optional Web Speech API Voice Integration stub
+// Optional Web Speech API Voice Integration
 function toggleVoice() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('Speech recognition is not supported on this browser/device.');
