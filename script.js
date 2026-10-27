@@ -10,7 +10,7 @@ const aiExplanation = document.getElementById('ai-explanation');
 function toggleSettings() {
     const box = document.getElementById('api-settings-box');
     box.classList.toggle('hidden');
-    const savedKey = localStorage.getItem('gemini_api_key') || '';
+    const savedKey = localStorage.getItem('groq_api_key') || '';
     document.getElementById('api-key-input').value = savedKey;
 }
 
@@ -20,7 +20,7 @@ function saveApiKey() {
         alert('Please enter a valid API key.');
         return;
     }
-    localStorage.setItem('gemini_api_key', key);
+    localStorage.setItem('groq_api_key', key);
     alert('API Key saved successfully!');
     toggleSettings();
 }
