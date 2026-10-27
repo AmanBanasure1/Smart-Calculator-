@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Calculator Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between items-center p-3 sm:p-4">
+
+    <!-- Header & Mode Selector -->
+    <header class="w-full max-w-md text-center py-2">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">AI Smart Calculator Pro</h1>
+        <p class="text-xs text-slate-400 mb-2">Natural Language, Voice & Intelligent Solver</p>
+        
+        <!-- Mode Selector Tabs -->
+        <div class="flex justify-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs">
+            <button onclick="setMode('standard')" id="mode-standard" class="flex-1 py-1.5 px-2 rounded-lg bg-blue-600 font-medium transition">Calculator</button>
+            <button onclick="setMode('ai')" id="mode-ai" class="flex-1 py-1.5 px-2 rounded-lg hover:bg-slate-700 text-slate-300 font-medium transition">AI Solver</button>
+            <button onclick="setMode('history')" id="mode-history" class="flex-1 py-1.5 px-2 rounded-lg hover:bg-slate-700 text-slate-300 font-medium transition">History & Insights</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl p-4 sm:p-5 border border-slate-700 relative overflow-hidden">
+        
+        <!-- VIEW 1: Standard & AI Input Calculator -->
+        <div id="view-calculator" class="space-y-3">
+            <!-- Natural Language AI Bar -->
+            <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700">
+                <label class="block text-[11px] text-blue-400 font-semibold mb-1 flex items-center justify-between">
+                    <span>✨ Ask AI / Word Problem</span>
+                    <span id="mic-status" class="text-slate-500 cursor-pointer hover:text-white" onclick="toggleVoice()">🎙️ Voice</span>
+                </label>
+                <div class="flex gap-2">
+                    <input type="text" id="ai-input" placeholder="e.g., 450 + 18% GST or split 1200 by 4" 
+                        class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                    <button onclick="handleAIQuery()" class="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Ask</button>
+                </div>
+            </div>
+
+            <!-- Display Screen -->
+            <div class="bg-slate-950 rounded-xl p-3.5 text-right border border-slate-800 min-h-[90px] flex flex-col justify-end">
+                <div id="history-screen" class="text-xs text-slate-500 h-4 overflow-hidden truncate"></div>
+                <div id="main-screen" class="text-3xl sm:text-4xl font-mono font-bold tracking-wider text-green-400 overflow-x-auto">0</div>
+                <div id="ai-explanation" class="text-[11px] text-indigo-300 mt-1 text-left hidden"></div>
+            </div>
+
+            <!-- Keypad Grid -->
+            <div class="grid grid-cols-4 gap-2">
+                <button class="btn-action bg-red-900/40 hover:bg-red-900/60 text-red-300 py-3 rounded-xl font-semibold text-sm" onclick="clearAll()">AC</button>
+                <button class="btn-action bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('(')">(</button>
+                <button class="btn-action bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue(')')">)</button>
+                <button class="btn-op bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('/')">÷</button>
+
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('7')">7</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('8')">8</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('9')">9</button>
+                <button class="btn-op bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('*')">×</button>
+
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('4')">4</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('5')">5</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('6')">6</button>
+                <button class="btn-op bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('-')">-</button>
+
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('1')">1</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('2')">2</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('3')">3</button>
+                <button class="btn-op bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('+')">+</button>
+
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm col-span-2" onclick="appendValue('0')">0</button>
+                <button class="btn-num bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-semibold text-sm" onclick="appendValue('.')">.</button>
+                <button onclick="calculateResult()" class="bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-sm">=</button>
+            </div>
+        </div>
+
+        <!-- VIEW 2: History & AI Insights Panel -->
+        <div id="view-history" class="hidden space-y-3">
+            <div class="flex justify-between items-center">
+                <h2 class="text-sm font-semibold text-slate-300">Calculation Log & AI Insights</h2>
+                <button onclick="clearHistoryLog()" class="text-[11px] text-red-400 hover:underline">Clear History</button>
+            </div>
+            <div id="history-log-container" class="bg-slate-950 rounded-xl p-3 h-64 overflow-y-auto space-y-2 text-xs border border-slate-800">
+                <p class="text-slate-500 text-center py-10">No calculations recorded yet.</p>
+            </div>
+            <div id="ai-insights-box" class="bg-indigo-950/40 border border-indigo-800/50 p-2.5 rounded-xl text-xs text-indigo-200">
+                💡 <span class="font-semibold">AI Tip:</span> Use the AI prompt bar above to calculate percentages, split bills, or translate units instantly!
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-xs text-slate-500 py-2 text-center">
+        AI Calculator Pro • Built with Mobile-First Architecture
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
