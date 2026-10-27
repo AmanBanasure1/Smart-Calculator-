@@ -88,13 +88,16 @@ function calculateResult() {
 }
 
 // REAL GEMINI API INTEGRATION
-async function handleAIQuery() {
-    const query = document.getElementById('ai-input').value.trim();
-    if (!query) return;
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt }],
+                response_format: { type: "json_object" }
+            })
 
-    const apiKey = localStorage.getItem('gemini_api_key');
+
+    const apiKey = localStorage.getItem('groq_api_key');
     if (!apiKey) {
-        alert('Please click on "⚙️ API Key" at the top right and enter your Google Gemini API key first!');
+        alert('Please click on "⚙️ API Key" at the top right and enter your Groq API key first!');
         toggleSettings();
         return;
     }
